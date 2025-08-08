@@ -1,8 +1,9 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "FastAPI",
-    "version": "0.1.0"
+    "title": "Galaxium Travels Booking API",
+    "description": "API for booking flights and managing users",
+    "version": "1.0.0"
   },
   "servers": [
     {
@@ -14,7 +15,7 @@
       "get": {
         "summary": "List all available flights",
         "description": "Retrieve a list of all available flights, including origin, destination, departure and arrival times, price, and the number of seats currently available for booking.",
-        "operationId": "list_flights_flights_get",
+        "operationId": "getFlights",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -22,10 +23,10 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/FlightOut"
+                    "$ref": "#/components/schemas/Flight"
                   },
                   "type": "array",
-                  "title": "Response List Flights Flights Get"
+                  "title": "Response Getflights"
                 }
               }
             }
@@ -37,12 +38,12 @@
       "post": {
         "summary": "Book a flight for a user",
         "description": "Book a seat on a specific flight for a user. Requires user_id, name, and flight_id in the request body. If the flight has available seats and the user_id matches the name, a new booking is created and the number of available seats is decremented by one. Returns the booking details.",
-        "operationId": "book_flight_book_post",
+        "operationId": "bookFlight",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BookingIn"
+                "$ref": "#/components/schemas/BookingRequest"
               }
             }
           },
@@ -54,7 +55,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BookingOut"
+                  "$ref": "#/components/schemas/Booking"
                 }
               }
             }
@@ -76,7 +77,7 @@
       "get": {
         "summary": "List all bookings for a user",
         "description": "Retrieve all bookings for a specific user by user_id. Returns a list of bookings, including booking status and booking time, for the given user.",
-        "operationId": "get_bookings_bookings__user_id__get",
+        "operationId": "getUserBookings",
         "parameters": [
           {
             "name": "user_id",
@@ -96,9 +97,9 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BookingOut"
+                    "$ref": "#/components/schemas/Booking"
                   },
-                  "title": "Response Get Bookings Bookings  User Id  Get"
+                  "title": "Response Getuserbookings"
                 }
               }
             }
@@ -120,7 +121,7 @@
       "post": {
         "summary": "Cancel a booking by booking ID",
         "description": "Cancel an existing booking by its booking_id. If the booking is active, its status is set to 'cancelled' and the number of available seats for the associated flight is incremented by one. Returns the updated booking details.",
-        "operationId": "cancel_booking_cancel__booking_id__post",
+        "operationId": "cancelBooking",
         "parameters": [
           {
             "name": "booking_id",
@@ -138,7 +139,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BookingOut"
+                  "$ref": "#/components/schemas/Booking"
                 }
               }
             }
@@ -160,12 +161,12 @@
       "post": {
         "summary": "Register a new user",
         "description": "Register a new user with a name and unique email. Returns the created user.",
-        "operationId": "register_user_register_post",
+        "operationId": "registerUser",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserIn"
+                "$ref": "#/components/schemas/UserRegistration"
               }
             }
           },
@@ -177,7 +178,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserOut"
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
@@ -199,7 +200,7 @@
       "get": {
         "summary": "Get user by name and email",
         "description": "Retrieve a user's information (including user_id) by providing both name and email. Returns 404 if not found.",
-        "operationId": "get_user_id_user_id_get",
+        "operationId": "getUser",
         "parameters": [
           {
             "name": "name",
@@ -226,7 +227,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserOut"
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
@@ -247,26 +248,7 @@
   },
   "components": {
     "schemas": {
-      "BookingIn": {
-        "properties": {
-          "user_id": {
-            "type": "integer",
-            "title": "User Id"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "flight_id": {
-            "type": "integer",
-            "title": "Flight Id"
-          }
-        },
-        "type": "object",
-        "required": ["user_id", "name", "flight_id"],
-        "title": "BookingIn"
-      },
-      "BookingOut": {
+      "Booking": {
         "properties": {
           "booking_id": {
             "type": "integer",
@@ -291,9 +273,28 @@
         },
         "type": "object",
         "required": ["booking_id", "user_id", "flight_id", "status", "booking_time"],
-        "title": "BookingOut"
+        "title": "Booking"
       },
-      "FlightOut": {
+      "BookingRequest": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "flight_id": {
+            "type": "integer",
+            "title": "Flight Id"
+          }
+        },
+        "type": "object",
+        "required": ["user_id", "name", "flight_id"],
+        "title": "BookingRequest"
+      },
+      "Flight": {
         "properties": {
           "flight_id": {
             "type": "integer",
@@ -326,7 +327,7 @@
         },
         "type": "object",
         "required": ["flight_id", "origin", "destination", "departure_time", "arrival_time", "price", "seats_available"],
-        "title": "FlightOut"
+        "title": "Flight"
       },
       "HTTPValidationError": {
         "properties": {
@@ -341,22 +342,7 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "UserIn": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "email": {
-            "type": "string",
-            "title": "Email"
-          }
-        },
-        "type": "object",
-        "required": ["name", "email"],
-        "title": "UserIn"
-      },
-      "UserOut": {
+      "User": {
         "properties": {
           "user_id": {
             "type": "integer",
@@ -373,7 +359,22 @@
         },
         "type": "object",
         "required": ["user_id", "name", "email"],
-        "title": "UserOut"
+        "title": "User"
+      },
+      "UserRegistration": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": ["name", "email"],
+        "title": "UserRegistration"
       },
       "ValidationError": {
         "properties": {
