@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from models import User as UserModel, Flight as FlightModel, Booking as BookingModel
 from db import get_db, init_db
 from seed import seed
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 app = FastAPI(
@@ -26,7 +26,7 @@ class Flight(BaseModel):
     price: int
     seats_available: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BookingRequest(BaseModel):
     user_id: int
@@ -40,18 +40,18 @@ class Booking(BaseModel):
     status: str
     booking_time: str
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserRegistration(BaseModel):
     name: str
-    email: str
+    email: EmailStr
 
 class User(BaseModel):
     user_id: int
     name: str
     email: str
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @app.get(
     "/flights",
@@ -73,12 +73,29 @@ def get_flights(db: Session = Depends(get_db)):
 def book_flight(booking: BookingRequest, db: Session = Depends(get_db)):
     flight = db.query(FlightModel).filter(FlightModel.flight_id == booking.flight_id).first()
     if not flight:
-        raise HTTPException(status_code=404, detail="Flight not found")
+        raise HTTPException(
+            status_code=404, 
+            detail="Flight not found. The specified flight_id does not exist in our system. Please check the flight_id or use the /flights endpoint to see available flights."
+        )
     if flight.seats_available < 1:
-        raise HTTPException(status_code=400, detail="No seats available")
+        raise HTTPException(
+            status_code=400, 
+            detail="No seats available on this flight. The flight is fully booked. Please check other flights or try again later if seats become available."
+        )
     user = db.query(UserModel).filter(UserModel.user_id == booking.user_id, UserModel.name == booking.name).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found or name does not match user ID")
+        # Check if user exists but name doesn't match
+        existing_user = db.query(UserModel).filter(UserModel.user_id == booking.user_id).first()
+        if existing_user:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"User ID {booking.user_id} exists but the name '{booking.name}' does not match the registered name '{existing_user.name}'. Please verify the user's name or use the correct name for this user ID."
+            )
+        else:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"User with ID {booking.user_id} is not registered in our system. The user might need to register first using the /register endpoint, or you may need to check if the user_id is correct."
+            )
     # Decrement seat
     flight.seats_available -= 1
     new_booking = BookingModel(
@@ -90,7 +107,6 @@ def book_flight(booking: BookingRequest, db: Session = Depends(get_db)):
     db.add(new_booking)
     db.commit()
     db.refresh(new_booking)
-    db.commit()
     return new_booking
 
 @app.get(
@@ -113,9 +129,15 @@ def get_user_bookings(user_id: int, db: Session = Depends(get_db)):
 def cancel_booking(booking_id: int, db: Session = Depends(get_db)):
     booking = db.query(BookingModel).filter(BookingModel.booking_id == booking_id).first()
     if not booking:
-        raise HTTPException(status_code=404, detail="Booking not found")
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Booking with ID {booking_id} not found. The booking may have been deleted or the booking_id may be incorrect. Please verify the booking_id or check if the booking exists."
+        )
     if booking.status == "cancelled":
-        raise HTTPException(status_code=400, detail="Booking already cancelled")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Booking {booking_id} is already cancelled and cannot be cancelled again. The booking status is currently '{booking.status}'. If you need to make changes, please contact support."
+        )
     flight = db.query(FlightModel).filter(FlightModel.flight_id == booking.flight_id).first()
     if flight:
         flight.seats_available += 1
@@ -134,7 +156,10 @@ def cancel_booking(booking_id: int, db: Session = Depends(get_db)):
 def register_user(user: UserRegistration, db: Session = Depends(get_db)):
     existing = db.query(UserModel).filter(UserModel.email == user.email).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Email '{user.email}' is already registered. A user with this email already exists in our system. If you're trying to access an existing account, use the /user_id endpoint with the correct name and email to get the user_id."
+        )
     new_user = UserModel(name=user.name, email=user.email)
     db.add(new_user)
     db.commit()
@@ -151,5 +176,8 @@ def register_user(user: UserRegistration, db: Session = Depends(get_db)):
 def get_user(name: str, email: str, db: Session = Depends(get_db)):
     user = db.query(UserModel).filter(UserModel.name == name, UserModel.email == email).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=404, 
+            detail=f"User not found with name '{name}' and email '{email}'. The user may not be registered in our system. Please check the spelling of both name and email, or register the user first using the /register endpoint."
+        )
     return user 

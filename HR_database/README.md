@@ -31,6 +31,43 @@ The API will be available at `http://localhost:8000`
 - `PUT /employees/{employee_id}` - Update an existing employee
 - `DELETE /employees/{employee_id}` - Delete an employee
 
+## Error Handling
+
+This HR API features **enhanced error messages** designed specifically for AI agents and better user experience:
+
+### Key Improvements
+- **Clear Problem Identification**: Error messages explain exactly what went wrong
+- **Actionable Next Steps**: Specific suggestions for resolution are provided
+- **Alternative Approaches**: Other endpoints are suggested when applicable
+- **AI-Friendly Format**: Messages are structured to help AI agents make decisions
+
+### Example Error Messages
+```json
+// Before: Generic error
+{
+  "detail": "Employee not found"
+}
+
+// After: Actionable error
+{
+  "detail": "Employee with ID 123 not found. The employee may have been deleted or the employee_id may be incorrect. Please verify the employee_id or use the /employees endpoint to see all available employees."
+}
+```
+
+### Error Scenarios Covered
+- **Employee not found**: Suggests using `/employees` endpoint to see available data
+- **Database read errors**: Explains file corruption or permission issues
+- **Database write errors**: Provides troubleshooting steps for file system issues
+- **CRUD operation errors**: Clear guidance for update/delete operations
+
+### Database Error Handling
+The system provides detailed error messages for:
+- **File corruption**: Guidance on checking file format and existence
+- **Permission issues**: Suggestions for file system access problems
+- **Data validation**: Clear explanation of required fields and formats
+
+For comprehensive error handling documentation, see the [Error Handling Guide](../../docs/error-handling-guide.md) and [Error Handling Examples](../../docs/error-handling-examples.md).
+
 ## API Documentation
 
 Once the server is running, you can access the interactive API documentation at:
