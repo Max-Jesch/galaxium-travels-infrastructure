@@ -89,13 +89,6 @@ For detailed testing information, see [TESTING.md](TESTING.md).
 - `POST /cancel/{booking_id}` - Cancel a booking
 
 
-## Setup (Local)
-
-1. Install dependencies:
-   ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
 ## Database
 
 The application uses SQLite with SQLAlchemy ORM. The database is automatically initialized and seeded with sample data on startup.
