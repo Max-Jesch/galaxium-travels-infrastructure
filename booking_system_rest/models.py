@@ -5,13 +5,13 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
-    user_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
 
 class Flight(Base):
     __tablename__ = 'flights'
-    flight_id = Column(Integer, primary_key=True, index=True)
+    flight_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     origin = Column(String, nullable=False)
     destination = Column(String, nullable=False)
     departure_time = Column(String, nullable=False)
@@ -21,7 +21,7 @@ class Flight(Base):
 
 class Booking(Base):
     __tablename__ = 'bookings'
-    booking_id = Column(Integer, primary_key=True, index=True)
+    booking_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
     flight_id = Column(Integer, ForeignKey('flights.flight_id'), nullable=False)
     status = Column(String, nullable=False)

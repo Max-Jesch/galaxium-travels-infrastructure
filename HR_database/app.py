@@ -23,7 +23,10 @@ def read_employees():
         df.columns = [col.strip() for col in df.columns]
         return df
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error reading database: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error reading employee database: {str(e)}. The database file may be corrupted or missing. Please check if the data/employees.md file exists and has the correct format."
+        )
 
 def write_employees(df):
     try:
@@ -35,7 +38,10 @@ def write_employees(df):
         with open('data/employees.md', 'w') as f:
             f.write(header + markdown_table)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error writing to database: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error writing to employee database: {str(e)}. The system may not have write permissions to the data directory, or the data/employees.md file may be locked by another process."
+        )
 
 @app.get("/employees", response_model=List[Employee])
 async def get_employees():
@@ -47,7 +53,10 @@ async def get_employee(employee_id: int):
     df = read_employees()
     employee = df[df['ID'] == employee_id]
     if employee.empty:
-        raise HTTPException(status_code=404, detail="Employee not found")
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Employee with ID {employee_id} not found. The employee may have been deleted or the employee_id may be incorrect. Please verify the employee_id or use the /employees endpoint to see all available employees."
+        )
     return employee.iloc[0].to_dict()
 
 @app.post("/employees", response_model=Employee)
@@ -64,7 +73,10 @@ async def create_employee(employee: Employee):
 async def update_employee(employee_id: int, employee: Employee):
     df = read_employees()
     if employee_id not in df['ID'].values:
-        raise HTTPException(status_code=404, detail="Employee not found")
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Employee with ID {employee_id} not found. Cannot update a non-existent employee. Please verify the employee_id or use the /employees endpoint to see all available employees."
+        )
     
     employee_dict = employee.dict()
     employee_dict['ID'] = employee_id
@@ -76,7 +88,10 @@ async def update_employee(employee_id: int, employee: Employee):
 async def delete_employee(employee_id: int):
     df = read_employees()
     if employee_id not in df['ID'].values:
-        raise HTTPException(status_code=404, detail="Employee not found")
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Employee with ID {employee_id} not found. Cannot delete a non-existent employee. Please verify the employee_id or use the /employees endpoint to see all available employees."
+        )
     
     df = df[df['ID'] != employee_id]
     write_employees(df)

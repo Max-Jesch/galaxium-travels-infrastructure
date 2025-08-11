@@ -79,6 +79,40 @@ This is a simple booking system for a space travel company, built with FastAPI a
 - `GET /bookings/{user_id}` — List bookings for a user
 - `POST /cancel/{booking_id}` — Cancel a booking
 
+## Error Handling
+
+This MCP server features **enhanced error messages** specifically designed for AI agents using the Model Context Protocol:
+
+### Key Improvements
+- **Clear Problem Identification**: Error messages explain exactly what went wrong
+- **Tool Suggestions**: Specific MCP tools are suggested for resolution
+- **Context Information**: Relevant details about the failure are provided
+- **AI-Friendly Format**: Messages are structured to help AI agents make decisions
+
+### Example Error Messages
+```python
+# Before: Generic error
+Exception: "User not found"
+
+# After: Actionable error with tool suggestions
+Exception: "User with ID 999 is not registered in our system. The user might need to register first using the register_user tool, or you may need to check if the user_id is correct."
+```
+
+### Error Scenarios Covered
+- **Flight not found**: Suggests using `list_flights` tool
+- **User not found**: Distinguishes between unregistered users and name mismatches
+- **No seats available**: Suggests checking other flights
+- **Booking errors**: Provides context and verification steps
+- **Duplicate registration**: Suggests using `get_user_id` tool
+
+### MCP Tool Integration
+All error messages are designed to work seamlessly with MCP tools:
+- **Flight operations**: `list_flights`, `book_flight`
+- **User management**: `register_user`, `get_user_id`
+- **Booking management**: `get_bookings`, `cancel_booking`
+
+For comprehensive error handling documentation, see the [Error Handling Guide](../../docs/error-handling-guide.md) and [Error Handling Examples](../../docs/error-handling-examples.md).
+
 ---
 
 This is a demo system and not intended for production use. 

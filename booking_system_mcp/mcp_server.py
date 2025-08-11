@@ -65,14 +65,20 @@ def book_flight(user_id: int, name: str, flight_id: int) -> BookingOut:
     flight = db.query(Flight).filter(Flight.flight_id == flight_id).first()
     if not flight:
         db.close()
-        raise Exception("Flight not found")
+        raise Exception(f"Flight not found. The specified flight_id {flight_id} does not exist in our system. Please check the flight_id or use the list_flights tool to see available flights.")
     if flight.seats_available < 1:
         db.close()
-        raise Exception("No seats available")
+        raise Exception(f"No seats available on flight {flight_id}. The flight is fully booked. Please check other flights or try again later if seats become available.")
     user = db.query(User).filter(User.user_id == user_id, User.name == name).first()
     if not user:
-        db.close()
-        raise Exception("User not found or name does not match user ID")
+        # Check if user exists but name doesn't match
+        existing_user = db.query(User).filter(User.user_id == user_id).first()
+        if existing_user:
+            db.close()
+            raise Exception(f"User ID {user_id} exists but the name '{name}' does not match the registered name '{existing_user.name}'. Please verify the user's name or use the correct name for this user ID.")
+        else:
+            db.close()
+            raise Exception(f"User with ID {user_id} is not registered in our system. The user might need to register first using the register_user tool, or you may need to check if the user_id is correct.")
     flight.seats_available -= 1
     new_booking = Booking(
         user_id=user_id,
@@ -106,10 +112,10 @@ def cancel_booking(booking_id: int) -> BookingOut:
     booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
     if not booking:
         db.close()
-        raise Exception("Booking not found")
+        raise Exception(f"Booking with ID {booking_id} not found. The booking may have been deleted or the booking_id may be incorrect. Please verify the booking_id or check if the booking exists.")
     if booking.status == "cancelled":
         db.close()
-        raise Exception("Booking already cancelled")
+        raise Exception(f"Booking {booking_id} is already cancelled and cannot be cancelled again. The booking status is currently '{booking.status}'. If you need to make changes, please contact support.")
     flight = db.query(Flight).filter(Flight.flight_id == booking.flight_id).first()
     if flight:
         flight.seats_available += 1
@@ -128,7 +134,7 @@ def register_user(name: str, email: str) -> UserOut:
     existing = db.query(User).filter(User.email == email).first()
     if existing:
         db.close()
-        raise Exception("Email already registered")
+        raise Exception(f"Email '{email}' is already registered. A user with this email already exists in our system. If you're trying to access an existing account, use the get_user_id tool with the correct name and email to get the user_id.")
     new_user = User(name=name, email=email)
     db.add(new_user)
     db.commit()
@@ -145,7 +151,7 @@ def get_user_id(name: str, email: str) -> UserOut:
     user = db.query(User).filter(User.name == name, User.email == email).first()
     if not user:
         db.close()
-        raise Exception("User not found")
+        raise Exception(f"User not found with name '{name}' and email '{email}'. The user may not be registered in our system. Please check the spelling of both name and email, or register the user first using the register_user tool.")
     out = UserOut.from_orm(user)
     db.close()
     return out
