@@ -14,16 +14,22 @@ This is a simple booking system for a space travel company, built with FastAPI a
 
 ## Setup (Local)
 
-1. Install dependencies:
+1. Set up virtual environment:
+   ```sh
+   python3.12 -m venv .venv
+   source ./.venv/bin/activate
+   ```
+2. Install dependencies:
    ```bash
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
-2. Run the app:
+3. Run the app:
    ```bash
-   uvicorn app:app --reload
+   python app.py
    ```
-3. The API will be available at `http://127.0.0.1:8000`.
-4. Use the interactive docs at `http://127.0.0.1:8000/docs`.
+4. The API will be available at `http://127.0.0.1:8082`.
+5. Use the interactive docs at `http://127.0.0.1:8082/docs`.
 
 ## Database
 - The SQLite database file (`booking.db`) will be created automatically on first run.

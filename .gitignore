@@ -135,3 +135,10 @@ Thumbs.db
 desktop.ini 
 
 .env
+
+### Additional files
+HR_database/.venv/
+booking_system_rest/.venv/
+architecture/.$galaxim-travel-infrastructure.drawio.dtmp
+.gitignore
+architecture/.$galaxim-travel-infrastructure.drawio.bkp

@@ -11,8 +11,16 @@ A simple HR database API that stores employee information in a Markdown file. Th
 
 ## Setup
 
-1. Install the required dependencies:
+1. Set up virtual environment:
+```sh
+python3.12 -m venv .venv
+source ./.venv/bin/activate
+```
+
+2. Install the required dependencies:
 ```bash
+pip install --upgrade pip
+pip install pandas
 pip install -r requirements.txt
 ```
 
@@ -21,7 +29,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-The API will be available at `http://localhost:8000`
+The API will be available at `http://localhost:8081`
 
 ## API Endpoints
 
@@ -34,8 +42,8 @@ The API will be available at `http://localhost:8000`
 ## API Documentation
 
 Once the server is running, you can access the interactive API documentation at:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+- Swagger UI: `http://localhost:8081/docs`
+- ReDoc: `http://localhost:8081/redoc`
 
 ## Data Structure
 
