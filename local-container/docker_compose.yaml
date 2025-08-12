@@ -1,0 +1,23 @@
+version: "2.15.1"
+services:
+  hr_database:
+    build: 
+      context: ${HR_DATABASE_DOCKER_CONTEXT}
+      dockerfile: ${HR_DATABASE_DOCKER_CONTEXT}/Dockerfile
+    image: hr_database:1.0.0
+    container_name: hr_database
+    ports:
+      - 8081:8081
+    environment:
+      - APP_USER=${APP_USER} #NOT USED
+  
+  booking_system:
+    build: 
+      context: ${BOOKING_SYSTEM_REST_DOCKER_CONTEXT}
+      dockerfile: ${BOOKING_SYSTEM_REST_DOCKER_CONTEXT}/Dockerfile
+    image: booking_system_rest:1.0.0
+    container_name: booking_system_rest
+    ports:
+      - 8082:8082
+    environment:
+      - APP_USER=${APP_USER} #NOT USED

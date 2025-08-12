@@ -10,6 +10,29 @@ This API provides endpoints for:
 - Booking management (view, cancel)
 - Flight seat availability tracking
 
+## Requirements
+- Python 3.9+
+- [pip](https://pip.pypa.io/en/stable/)
+
+## Set up and run local
+
+1. Set up virtual environment:
+   ```sh
+   python3.12 -m venv .venv
+   source ./.venv/bin/activate
+   ```
+
+2. Install dependencies:
+     ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+3. Run the app:
+   ```bash
+   python app.py
+   ```
+
 ## Issues Addressed
 
 ### User Registration and ID Matching Problems
@@ -65,60 +88,6 @@ For detailed testing information, see [TESTING.md](TESTING.md).
 - `GET /bookings/{user_id}` - Get user's bookings
 - `POST /cancel/{booking_id}` - Cancel a booking
 
-## Error Handling
-
-This API features **enhanced error messages** designed specifically for AI agents and better user experience:
-
-### Key Improvements
-- **Clear Problem Identification**: Error messages explain exactly what went wrong
-- **Actionable Next Steps**: Specific suggestions for resolution are provided
-- **Alternative Approaches**: Other endpoints are suggested when applicable
-- **AI-Friendly Format**: Messages are structured to help AI agents make decisions
-
-### Example Error Messages
-```json
-// Before: Generic error
-{
-  "detail": "User not found"
-}
-
-// After: Actionable error
-{
-  "detail": "User with ID 999 is not registered in our system. The user might need to register first using the /register endpoint, or you may need to check if the user_id is correct."
-}
-```
-
-### Error Scenarios Covered
-- **Flight not found**: Suggests using `/flights` endpoint
-- **User not found**: Distinguishes between unregistered users and name mismatches
-- **No seats available**: Suggests checking other flights
-- **Booking errors**: Provides context and verification steps
-- **Duplicate registration**: Suggests using `/user_id` endpoint
-
-For comprehensive error handling documentation, see the [Error Handling Guide](../../docs/error-handling-guide.md) and [Error Handling Examples](../../docs/error-handling-examples.md).
-
-## Installation
-
-1. **Clone the repository**
-2. **Create virtual environment**:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Running the Application
-
-```bash
-# Start the server
-uvicorn app:app --reload
-
-# Access the API documentation
-open http://localhost:8000/docs
-```
 
 ## Database
 

@@ -173,6 +173,7 @@ def register_user(user: UserRegistration, db: Session = Depends(get_db)):
     summary="Get user by name and email",
     description="Retrieve a user's information (including user_id) by providing both name and email. Returns 404 if not found."
 )
+
 def get_user(name: str, email: str, db: Session = Depends(get_db)):
     user = db.query(UserModel).filter(UserModel.name == name, UserModel.email == email).first()
     if not user:
@@ -181,3 +182,7 @@ def get_user(name: str, email: str, db: Session = Depends(get_db)):
             detail=f"User not found with name '{name}' and email '{email}'. The user may not be registered in our system. Please check the spelling of both name and email, or register the user first using the /register endpoint."
         )
     return user 
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8082) 
