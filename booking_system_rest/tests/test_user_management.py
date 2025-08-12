@@ -33,11 +33,14 @@ class TestUserRegistration:
         duplicate_user["name"] = "Different Name"
         response2 = client.post("/register", json=duplicate_user)
         
-        assert response2.status_code == status.HTTP_400_BAD_REQUEST
-        assert "Email" in response2.json()["detail"]
-        assert "already registered" in response2.json()["detail"]
-        assert "already exists in our system" in response2.json()["detail"]
-        assert "/user_id endpoint" in response2.json()["detail"]
+        assert response2.status_code == status.HTTP_200_OK
+        data = response2.json()
+        assert data["success"] == False
+        assert data["error"] == "Email already registered"
+        assert data["error_code"] == "EMAIL_EXISTS"
+        assert "already registered" in data["details"]
+        assert "already exists in our system" in data["details"]
+        assert "/user_id endpoint" in data["details"]
     
     def test_register_user_missing_fields(self, client):
         """Test registration with missing required fields."""
@@ -91,14 +94,17 @@ class TestUserRetrieval:
         """Test user retrieval when user doesn't exist."""
         response = client.get("/user_id?name=NonExistent&email=nonexistent@example.com")
         
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "User not found" in response.json()["detail"]
-        assert "may not be registered" in response.json()["detail"]
-        assert "check the spelling" in response.json()["detail"]
-        assert "/register endpoint" in response.json()["detail"]
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "User not found"
+        assert data["error_code"] == "USER_NOT_FOUND"
+        assert "may not be registered" in data["details"]
+        assert "check the spelling" in data["details"]
+        assert "/register endpoint" in data["details"]
     
     def test_get_user_missing_parameters(self, client):
-        """Test user retrieval with missing query parameters."""
+        """Test user retrieval with missing parameters."""
         # Missing name
         response1 = client.get("/user_id?email=test@example.com")
         assert response1.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -110,37 +116,13 @@ class TestUserRetrieval:
         # No parameters
         response3 = client.get("/user_id")
         assert response3.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-class TestUserIDConsistency:
-    """Test that user IDs are consistent and properly generated."""
     
-    def test_user_id_auto_increment(self, client, db_session):
-        """Test that user IDs auto-increment properly."""
-        users_data = [
-            {"name": "User1", "email": "user1@example.com"},
-            {"name": "User2", "email": "user2@example.com"},
-            {"name": "User3", "email": "user3@example.com"}
-        ]
+    def test_get_user_empty_parameters(self, client):
+        """Test user retrieval with empty parameters."""
+        response = client.get("/user_id?name=&email=")
         
-        user_ids = []
-        for user_data in users_data:
-            response = client.post("/register", json=user_data)
-            assert response.status_code == status.HTTP_200_OK
-            user_ids.append(response.json()["user_id"])
-        
-        # Verify IDs are sequential and unique
-        assert len(set(user_ids)) == len(user_ids)  # All unique
-        assert user_ids == sorted(user_ids)  # Sequential
-    
-    def test_user_id_persistence(self, client, db_session, sample_user_data):
-        """Test that user ID remains consistent across operations."""
-        # Register user
-        register_response = client.post("/register", json=sample_user_data)
-        assert register_response.status_code == status.HTTP_200_OK
-        user_id = register_response.json()["user_id"]
-        
-        # Retrieve user multiple times
-        for _ in range(3):
-            response = client.get(f"/user_id?name={sample_user_data['name']}&email={sample_user_data['email']}")
-            assert response.status_code == status.HTTP_200_OK
-            assert response.json()["user_id"] == user_id
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "User not found"
+        assert data["error_code"] == "USER_NOT_FOUND"

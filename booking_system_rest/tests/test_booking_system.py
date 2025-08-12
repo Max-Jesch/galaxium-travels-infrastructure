@@ -80,10 +80,12 @@ class TestFlightBooking:
         
         response = client.post("/book", json=booking_data)
         
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "User ID" in response.json()["detail"]
-        assert "exists but the name" in response.json()["detail"]
-        assert "does not match the registered name" in response.json()["detail"]
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "Name mismatch"
+        assert data["error_code"] == "NAME_MISMATCH"
+        assert "does not match the registered name" in data["details"]
         
         # Verify no booking was created
         bookings = db_session.query(Booking).filter(Booking.flight_id == flight.flight_id).all()
@@ -117,9 +119,12 @@ class TestFlightBooking:
         
         response = client.post("/book", json=booking_data)
         
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "User with ID 999 is not registered" in response.json()["detail"]
-        assert "might need to register first" in response.json()["detail"]
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "User not found"
+        assert data["error_code"] == "USER_NOT_FOUND"
+        assert "not registered in our system" in data["details"]
     
     def test_book_flight_not_found(self, client, db_session, sample_user_data):
         """Test booking fails when flight doesn't exist."""
@@ -137,10 +142,12 @@ class TestFlightBooking:
         
         response = client.post("/book", json=booking_data)
         
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Flight not found" in response.json()["detail"]
-        assert "does not exist in our system" in response.json()["detail"]
-        assert "/flights endpoint" in response.json()["detail"]
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "Flight not found"
+        assert data["error_code"] == "FLIGHT_NOT_FOUND"
+        assert "does not exist in our system" in data["details"]
     
     def test_book_flight_no_seats_available(self, client, db_session, sample_user_data):
         """Test booking fails when no seats are available."""
@@ -171,10 +178,12 @@ class TestFlightBooking:
         
         response = client.post("/book", json=booking_data)
         
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "No seats available" in response.json()["detail"]
-        assert "fully booked" in response.json()["detail"]
-        assert "check other flights" in response.json()["detail"]
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "No seats available"
+        assert data["error_code"] == "NO_SEATS_AVAILABLE"
+        assert "fully booked" in data["details"]
 
 class TestBookingRetrieval:
     """Test booking retrieval functionality."""
@@ -294,10 +303,12 @@ class TestBookingCancellation:
         """Test cancellation of non-existent booking."""
         response = client.post("/cancel/999")
         
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Booking with ID 999 not found" in response.json()["detail"]
-        assert "may have been deleted" in response.json()["detail"]
-        assert "verify the booking_id" in response.json()["detail"]
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "Booking not found"
+        assert data["error_code"] == "BOOKING_NOT_FOUND"
+        assert "not found" in data["details"]
     
     def test_cancel_already_cancelled_booking(self, client, db_session, sample_user_data):
         """Test cancellation of already cancelled booking."""
@@ -333,7 +344,9 @@ class TestBookingCancellation:
         # Try to cancel again
         response = client.post(f"/cancel/{booking.booking_id}")
         
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "already cancelled" in response.json()["detail"]
-        assert "cannot be cancelled again" in response.json()["detail"]
-        assert "contact support" in response.json()["detail"]
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["success"] == False
+        assert data["error"] == "Booking already cancelled"
+        assert data["error_code"] == "ALREADY_CANCELLED"
+        assert "already cancelled" in data["details"]

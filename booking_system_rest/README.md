@@ -10,29 +10,6 @@ This API provides endpoints for:
 - Booking management (view, cancel)
 - Flight seat availability tracking
 
-## Requirements
-- Python 3.9+
-- [pip](https://pip.pypa.io/en/stable/)
-
-## Set up and run local
-
-1. Set up virtual environment:
-   ```sh
-   python3.12 -m venv .venv
-   source ./.venv/bin/activate
-   ```
-
-2. Install dependencies:
-     ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
-3. Run the app:
-   ```bash
-   python app.py
-   ```
-
 ## Issues Addressed
 
 ### User Registration and ID Matching Problems
@@ -74,6 +51,32 @@ python run_tests.py flight    # Flight management tests
 
 For detailed testing information, see [TESTING.md](TESTING.md).
 
+## Error Handling
+
+The API has been redesigned to work better with agentic systems by ensuring that only truly fatal errors return non-200 status codes. Business logic errors now return 200 status codes with detailed error information in the response body.
+
+### Error Response Format
+```json
+{
+  "success": false,
+  "error": "Error message",
+  "error_code": "ERROR_CODE",
+  "details": "Detailed error description"
+}
+```
+
+### Error Codes
+- `FLIGHT_NOT_FOUND` - Specified flight doesn't exist
+- `NO_SEATS_AVAILABLE` - Flight is fully booked
+- `USER_NOT_FOUND` - User is not registered
+- `NAME_MISMATCH` - User ID doesn't match the provided name
+- `EMAIL_EXISTS` - Email is already registered
+- `BOOKING_NOT_FOUND` - Booking doesn't exist
+- `ALREADY_CANCELLED` - Booking is already cancelled
+
+### Success Response Format
+Successful operations return the expected data directly (e.g., booking details, user information, flight list).
+
 ## API Endpoints
 
 ### User Management
@@ -88,6 +91,28 @@ For detailed testing information, see [TESTING.md](TESTING.md).
 - `GET /bookings/{user_id}` - Get user's bookings
 - `POST /cancel/{booking_id}` - Cancel a booking
 
+## Installation
+
+1. **Clone the repository**
+2. **Create virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Running the Application
+
+```bash
+# Start the server
+uvicorn app:app --reload
+
+# Access the API documentation
+open http://localhost:8000/docs
+```
 
 ## Database
 

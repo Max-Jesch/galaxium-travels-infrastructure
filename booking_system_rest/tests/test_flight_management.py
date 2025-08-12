@@ -267,5 +267,9 @@ class TestFlightBookingIntegration:
         }
         
         extra_response = client.post("/book", json=extra_booking_data)
-        assert extra_response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "No seats available" in extra_response.json()["detail"]
+        assert extra_response.status_code == status.HTTP_200_OK
+        data = extra_response.json()
+        assert data["success"] == False
+        assert data["error"] == "No seats available"
+        assert data["error_code"] == "NO_SEATS_AVAILABLE"
+        assert "fully booked" in data["details"]
