@@ -14,6 +14,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
+##################################
+# Enable cross origin header fastapi (https://fastapi.tiangolo.com/tutorial/cors/#use-corsmiddleware)
+from fastapi.middleware.cors import CORSMiddleware
+
 @app.on_event("startup")
 def on_startup():
     init_db()
@@ -252,6 +256,16 @@ def get_user(name: str, email: str, db: Session = Depends(get_db)):
     except Exception as e:
         # This is a truly fatal error - database connection issue
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == "__main__":
     import uvicorn
