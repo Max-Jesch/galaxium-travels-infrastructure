@@ -139,6 +139,6 @@ desktop.ini
 ### Additional files
 HR_database/.venv/
 booking_system_rest/.venv/
+galaxium-booking-web-app/.venv/
 architecture/.$galaxim-travel-infrastructure.drawio.dtmp
-.gitignore
 architecture/.$galaxim-travel-infrastructure.drawio.bkp
