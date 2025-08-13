@@ -4,6 +4,8 @@ This is a simple web application for booking flights using the Galaxium Travels 
 
 This simple web application provides a user-friendly interface for booking flights, viewing available flights, and managing user bookings. The application is containerized using Docker, making it easy to deploy and run in any environment that supports Docker.
 
+![](/images/run-containers-02.gif)
+
 ### 1. Project Structure
 
 This is the web application project structure. We'll use a simple structure with the following directories and files:
@@ -27,11 +29,11 @@ galaxium-booking-web-app/
     └── book_flight.html
 ```
 
-## Prerequisites
+## 2. Prerequisites
 
 - Docker
 
-## Running the Application
+## 3. Running the Application locally
 
 1. Navigate to the application folder:
    ```sh
@@ -58,4 +60,26 @@ galaxium-booking-web-app/
 
 5. Open your browser and navigate to `http://localhost:8083` to access the application.
 
+## 4. Deploy to IBM Code Engine
 
+![](/images/run-containers-on-code-engine-01.png)
+
+1. Install Jupyter
+
+```sh
+python3 -m venv .venv
+source ./.venv/bin/activate
+pip install jupyter
+```
+
+2. Start Jupyter Notebook
+
+```sh
+jupyter notebook
+```
+
+3. Start the `deployment_web_application_server.ipynb` Notebook and follow the steps inside the Notebook
+
+```sh
+deployment_web_application_server.ipynb
+```
