@@ -40,12 +40,13 @@ galaxium-booking-web-app/
    cd galaxium-booking-web-app
    ```
 
-2. Configure the `BACKEND_URL` in the `app.py`.
+2. Configure the `BACKEND_URL` in the `.env` file.
    Insert your Code Engine `BACKEND_URL`.
    
-   ```python
-   #BACKEND_URL = "http://booking_system:8082" #Docker Compose configuration
-   BACKEND_URL = "https://galaxium-booking-system.XXXX.us-south.codeengine.appdomain.cloud" #Code Engine
+   Enable the needed environment by uncomment the BACKEND_URL.
+
+   ```sh
+   cat .env-template > .env
    ```
 
 3. Build the Docker image:
@@ -55,7 +56,8 @@ galaxium-booking-web-app/
 
 4. Run the Docker container:
    ```sh
-   docker run -p 8083:8083 galaxium-booking-web-app
+   source .env
+   docker run -p 8083:8083 galaxium-booking-web-app -e BACKEND_URL=${BACKEND_URL}
    ```
 
 5. Open your browser and navigate to `http://localhost:8083` to access the application.
@@ -70,6 +72,7 @@ galaxium-booking-web-app/
 python3 -m venv .venv
 source ./.venv/bin/activate
 pip install jupyter
+pip install dotenv
 ```
 
 2. Start Jupyter Notebook
