@@ -2,9 +2,9 @@ from flask import Flask, render_template, request, Response, jsonify
 from flask_cors import CORS
 import requests
 import json
+import os
 
-BACKEND_URL = "http://booking_system:8082" #Docker Compose configuration
-#BACKEND_URL = "https://galaxium-booking-system.1yyfsw1we2xf.us-south.codeengine.appdomain.cloud" #Code Engine
+BACKEND_URL = os.getenv('BACKEND_URL')
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
