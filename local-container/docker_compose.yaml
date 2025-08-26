@@ -31,4 +31,4 @@ services:
     ports:
       - 8083:8083
     environment:
-      - BACKEND_URL="http://booking_system:8082"
+      - BACKEND_URL=http://booking_system:8082
