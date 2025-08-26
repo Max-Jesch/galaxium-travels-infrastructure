@@ -21,3 +21,14 @@ services:
       - 8082:8082
     environment:
       - APP_USER=${APP_USER} #NOT USED
+
+  web_app:
+    build: 
+      context: ${WEB_APP_DOCKER_CONTEXT}
+      dockerfile: ${WEB_APP_DOCKER_CONTEXT}/Dockerfile
+    image: web_app:1.0.0
+    container_name: web_app
+    ports:
+      - 8083:8083
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
