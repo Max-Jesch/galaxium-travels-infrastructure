@@ -8,19 +8,20 @@ import os
 app = FastAPI(title="Galaxium Travels HR API")
 
 class Employee(BaseModel):
-    id: Optional[int] = None
+    id: str = None
     first_name: str
     last_name: str
     department: str
     position: str
-    hire_date: date
-    salary: float
+    hire_date: str
+    salary: str
 
 def read_employees():
     try:
         df = pd.read_csv('data/employees.md', sep='|', skiprows=3)
         df = df.iloc[:, 1:-1]  # Remove first and last empty columns
         df.columns = [col.strip() for col in df.columns]
+        print(f"Local: {df}")
         return df
     except Exception as e:
         raise HTTPException(
@@ -46,12 +47,15 @@ def write_employees(df):
 @app.get("/employees", response_model=List[Employee])
 async def get_employees():
     df = read_employees()
+    print(f"Server before cleaning:\n{df}")
+    df = df.iloc[1:]
+    print(f"Server:\n{df.to_dict('records')}")
     return df.to_dict('records')
 
 @app.get("/employees/{employee_id}", response_model=Employee)
-async def get_employee(employee_id: int):
+async def get_employee(employee_id: str):
     df = read_employees()
-    employee = df[df['ID'] == employee_id]
+    employee = df[df['id'] == str(employee_id)]
     if employee.empty:
         raise HTTPException(
             status_code=404, 
@@ -62,38 +66,38 @@ async def get_employee(employee_id: int):
 @app.post("/employees", response_model=Employee)
 async def create_employee(employee: Employee):
     df = read_employees()
-    new_id = df['ID'].max() + 1 if not df.empty else 1
+    new_id = df['id'].max() + 1 if not df.empty else 1
     employee_dict = employee.dict()
-    employee_dict['ID'] = new_id
+    employee_dict['id'] = str(new_id)
     df = pd.concat([df, pd.DataFrame([employee_dict])], ignore_index=True)
     write_employees(df)
     return employee_dict
 
 @app.put("/employees/{employee_id}", response_model=Employee)
-async def update_employee(employee_id: int, employee: Employee):
+async def update_employee(employee_id: str, employee: Employee):
     df = read_employees()
-    if employee_id not in df['ID'].values:
+    if employee_id not in df['id'].values:
         raise HTTPException(
             status_code=404, 
             detail=f"Employee with ID {employee_id} not found. Cannot update a non-existent employee. Please verify the employee_id or use the /employees endpoint to see all available employees."
         )
     
     employee_dict = employee.dict()
-    employee_dict['ID'] = employee_id
-    df.loc[df['ID'] == employee_id] = employee_dict
+    employee_dict['id'] = employee_id
+    df.loc[df['id'] == employee_id] = employee_dict
     write_employees(df)
     return employee_dict
 
 @app.delete("/employees/{employee_id}")
-async def delete_employee(employee_id: int):
+async def delete_employee(employee_id: str):
     df = read_employees()
-    if employee_id not in df['ID'].values:
+    if employee_id not in df['id'].values:
         raise HTTPException(
             status_code=404, 
             detail=f"Employee with ID {employee_id} not found. Cannot delete a non-existent employee. Please verify the employee_id or use the /employees endpoint to see all available employees."
         )
     
-    df = df[df['ID'] != employee_id]
+    df = df[df['id'] != employee_id]
     write_employees(df)
     return {"message": "Employee deleted successfully"}
 
