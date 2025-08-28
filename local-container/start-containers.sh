@@ -33,13 +33,17 @@ echo "Home path:    $HOME_PATH"
 "/bin/sh" "${HOME_PATH}"/env_profile_generate.sh > ~/.env_profile
 
 # 2. load application environment configurations
-#source $(pwd)/../src/server/.env
+#source $(pwd)/../HR_database/.env
+source $(pwd)/../booking_system_rest/.env
+source $(pwd)/../galaxium-booking-web-app/.env
 
 # 3. set galaxium travels infrastructure docker context
 cd $HOME_PATH/../HR_database
 export HR_DATABASE_DOCKER_CONTEXT=$(pwd)
 cd $HOME_PATH/../booking_system_rest
 export BOOKING_SYSTEM_REST_DOCKER_CONTEXT=$(pwd)
+cd $HOME_PATH/../galaxium-booking-web-app
+export WEB_APP_DOCKER_CONTEXT=$(pwd)
 cd $HOME_PATH
 
 # 9. Start compose
