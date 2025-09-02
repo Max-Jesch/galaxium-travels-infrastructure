@@ -48,5 +48,9 @@ cd $HOME_PATH
 
 # 9. Start compose
 docker compose version
+echo "**************** BUILD ******************" 
+docker compose -f ./docker_compose.yaml build
 echo "**************** START ******************" 
-docker compose -f ./docker_compose.yaml up
+docker compose -f ./docker_compose.yaml up # --detach
+#echo "**************** START detach ******************" 
+#docker compose -f ./docker_compose.yaml stop

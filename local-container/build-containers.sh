@@ -47,6 +47,10 @@ export WEB_APP_DOCKER_CONTEXT=$(pwd)
 cd $HOME_PATH
 
 # 9. Start compose
-docker compose version
-echo "**************** START ******************" 
-docker compose -f ./docker_compose.yaml up
+docker compose #version
+echo "**************** BUILD ******************" 
+docker compose -f ./docker_compose.yaml build
+#echo "**************** START ******************" 
+#docker compose -f ./docker_compose.yaml up # --detach
+
+#docker compose -f ./docker_compose.yaml stop
