@@ -16,18 +16,28 @@ This service can be deployed as an MCP server, making its booking tools availabl
    ```sh
    python mcp_server.py
    ```
-   The server will listen on port 8000 by default.
+   The server will listen on port 8084 by default.
 4. interact with it locally
    ```sh
    export DANGEROUSLY_OMIT_AUTH=true   
    npx @modelcontextprotocol/inspector  
    ```
 
+5. Use `MCP inspector`:
+
+* Connect
+
+![](../images/connect-to-mcp-locally-01.jpg)
+
+* List tools
+
+![](../images/connect-to-mcp-locally-02.jpg)
+
 ## Deploying to IBM Code Engine
 
 - Build and push your Docker image (see Dockerfile).
-- Deploy to Code Engine, exposing port 8000.
-- The MCP server will be available at `https://<your-app-url>:8000/mcp`.
+- Deploy to Code Engine, exposing port 8484.
+- The MCP server will be available at `https://<your-app-url>:8484/mcp`.
 
 ---
 
@@ -55,8 +65,8 @@ This is a simple booking system for a space travel company, built with FastAPI a
    ```bash
    uvicorn app:app --reload
    ```
-3. The API will be available at `http://127.0.0.1:8000`.
-4. Use the interactive docs at `http://127.0.0.1:8000/docs`.
+3. The API will be available at `http://127.0.0.1:8484`.
+4. Use the interactive docs at `http://127.0.0.1:8484/docs`.
 
 ## Database
 - The SQLite database file (`booking.db`) will be created automatically on first run.

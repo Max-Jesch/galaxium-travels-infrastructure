@@ -22,6 +22,14 @@ services:
     environment:
       - APP_USER=${APP_USER} #NOT USED
 
+  booking_system_mcp:
+    build: 
+      context: ${BOOKING_SYSTEM_MCP_DOCKER_CONTEXT}
+      dockerfile: ${BOOKING_SYSTEM_MCP_DOCKER_CONTEXT}/Dockerfile
+    image: booking_system_mcp:1.0.0
+    container_name: booking_system_mcp
+    ports:
+      - 8084:8084
   web_app:
     build: 
       context: ${WEB_APP_DOCKER_CONTEXT}
