@@ -1,8 +1,8 @@
 # Start all server applications
 
-* Simplified Architecture
+* Simplified Architecture local containers in compose
 
-![](/images/run-containers-on-code-engine-01.png)
+![](/images/run-containers-03.png)
 
 1. Insert followling commands
 
@@ -44,3 +44,7 @@ hr_database          | INFO:     Uvicorn running on http://0.0.0.0:8081 (Press C
 The following image show the running server applications.
 
 ![](/images/run-containers-01.png)
+
+* Simplified Architecture on Code Engine
+
+![](/images/run-containers-on-code-engine-01.png)

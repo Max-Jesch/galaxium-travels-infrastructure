@@ -44,6 +44,8 @@ cd $HOME_PATH/../booking_system_rest
 export BOOKING_SYSTEM_REST_DOCKER_CONTEXT=$(pwd)
 cd $HOME_PATH/../galaxium-booking-web-app
 export WEB_APP_DOCKER_CONTEXT=$(pwd)
+cd $HOME_PATH/../booking_system_mcp
+export BOOKING_SYSTEM_MCP_DOCKER_CONTEXT=$(pwd)
 cd $HOME_PATH
 
 # 9. Start compose
