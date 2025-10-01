@@ -2,201 +2,142 @@
 
 A sophisticated graph-based retrieval augmented generation (RAG) system for the Galaxium Travels markdown documents. This system creates a knowledge graph from document relationships and enables intelligent querying with graph traversal capabilities.
 
-## 🌟 Features
-
-- **Document Parsing**: Automatically extracts content and metadata from markdown files
-- **Knowledge Graph Construction**: Builds relationships between documents based on internal links
-- **Vector Embeddings**: Uses OpenAI embeddings for semantic search
-- **Graph Traversal**: Traverses document relationships to find related content
-- **Intelligent Querying**: Combines semantic search with graph traversal for comprehensive results
-- **LLM Integration**: Uses GPT-4 for generating contextual answers
-- **Interactive Visualizations**: NetworkX and Plotly graphs with clear arrows and readable file names
-
-## 🏗️ Architecture
-
-The system consists of several key components:
-
-1. **Document Parser**: Extracts content, metadata, and relationships from markdown files
-2. **Knowledge Graph Builder**: Creates a graph structure from document relationships
-3. **Vector Store**: Stores document embeddings for semantic search (AstraDB)
-4. **Graph Retriever**: Combines vector search with graph traversal
-5. **LLM Integration**: Generates intelligent responses using GPT-4
-
 ## 📁 Project Structure
 
 ```
 graph_rag/
-├── galaxium_graph_rag_demo.ipynb    # 🎯 MAIN ENTRY POINT - Interactive Demo
-├── README.md                        # 📖 This documentation
-├── requirements.txt                 # 📦 Python dependencies
-├── .env                            # 🔧 Environment configuration
-├── .env-template                   # 🔧 Environment template
-├── 97_raw_markdown_files/          # 📚 Source documents (28 markdown files)
-└── src/                            # 💻 Source code & supporting files
-    ├── galaxium_graph_rag.py       # 🧠 Core system implementation
-    ├── demo_graph_rag.py           # 🚀 Command-line demo script
-    ├── test_astradb_graph_rag.py    # 🧪 AstraDB integration tests
-    ├── test_document_parsing.py    # 🧪 Document parsing tests
-    ├── venv/                        # 🐍 Virtual environment
-    └── README.md                    # 📖 Source code documentation
+├── 📖 README.md                           # This file
+├── 📦 requirements.txt                    # Python dependencies
+├── 🔧 .env-template                      # Environment configuration template
+├── 📚 97_raw_markdown_files/             # Source documents (28 markdown files)
+├── 🎯 galaxium_graph_rag_demo.ipynb      # Main interactive demo notebook
+├── 💻 src/                               # Core source code
+│   ├── galaxium_graph_rag.py            # Main Graph RAG implementation
+│   ├── demo_graph_rag.py                # Command-line demo
+│   ├── test_*.py                         # Unit tests
+│   └── venv/                            # Virtual environment
+├── 🧪 tests/                             # Test scripts
+│   ├── test_vector_format.py            # Vector format tests
+│   └── test_collection_config.py        # Collection configuration tests
+├── 🛠️ scripts/                          # Utility scripts
+│   ├── reindex_collection.py            # Full re-indexing script
+│   ├── trigger_reindexing.py            # Interactive re-indexing
+│   ├── debug_vector_storage.py          # Vector storage debugging
+│   ├── check_database_vectors.py        # Database vector inspection
+│   └── verify_vector_format.py          # Vector format verification
+├── 📖 docs/                             # Documentation
+│   ├── CONVERSATION_SUMMARY.md          # Development history
+│   └── vector_format_summary.md         # Vector format analysis
+└── 🎨 examples/                         # Example scripts
+    └── demo_vector_format_fix.py        # Vector format demonstration
 ```
 
 ## 🚀 Quick Start
 
 ### Option 1: Interactive Demo (Recommended)
-1. **Open the main notebook**: `galaxium_graph_rag_demo.ipynb`
-2. **Follow the step-by-step guide** in the notebook
-3. **Run all cells** to see the complete system in action
+```bash
+# Open the main notebook
+jupyter notebook galaxium_graph_rag_demo.ipynb
+```
 
 ### Option 2: Command Line
-1. **Install dependencies**: `pip install -r requirements.txt`
-2. **Set up environment variables** (see Configuration section)
-3. **Run the demo**: `python src/demo_graph_rag.py`
-
-## ⚙️ Configuration
-
-### Environment Variables
-Create a `.env` file in the root directory with:
-
 ```bash
-OPENAI_API_KEY=your_openai_api_key_here
-ASTRA_DB_API_ENDPOINT=your_astradb_endpoint_here
-ASTRA_DB_APPLICATION_TOKEN=your_astradb_token_here
-ASTRA_DB_KEYSPACE=your_keyspace_here  # Optional
+# Run the command-line demo
+python src/demo_graph_rag.py
 ```
 
-### Dependencies
-Install required packages:
+### Option 3: Re-indexing
 ```bash
-pip install -r requirements.txt
+# Re-index documents to a new collection
+python scripts/reindex_collection.py --collection my_new_collection
 ```
 
-### Vector Storage Format
+## 🔧 Configuration
 
-The system is configured to store vectors in AstraDB as **float arrays** instead of binary format for better readability and debugging:
-
-**Before (Binary Format):**
-```json
-"$vector": {"$binary": "PM8/ZLuBuZe8aukOvGsiK7zz1X..."}
-```
-
-**After (Float Array Format):**
-```json
-"$vector": [0.011600582860410213, -0.0247, 0.0156, ...]
-```
-
-This is achieved through a custom vector insertion method (`_add_documents_with_float_vectors`) that:
-- Bypasses LangChain's default binary encoding
-- Directly inserts documents with float array vectors
-- Maintains compatibility with AstraDB's vector search capabilities
-- Provides better debugging and inspection capabilities
-
-### Re-indexing Documents
-
-When you need to re-index documents into a new collection or update existing data:
-
-**Full Re-indexing:**
+Copy the environment template and fill in your credentials:
 ```bash
-python reindex_collection.py --collection galaxium_travels_documents_2
+cp .env-template .env
+# Edit .env with your API keys
 ```
 
-**Quick Re-indexing:**
+Required environment variables:
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `ASTRA_DB_API_ENDPOINT`: Your AstraDB endpoint
+- `ASTRA_DB_APPLICATION_TOKEN`: Your AstraDB token
+- `ASTRA_DB_COLLECTION_NAME`: Collection name (default: galaxium_travels_documents_2)
+
+## 🧪 Testing
+
+Run the test suite:
 ```bash
-python trigger_reindexing.py
+# Test vector format
+python tests/test_vector_format.py
+
+# Test collection configuration
+python tests/test_collection_config.py
 ```
 
-**Force Re-indexing (no confirmation):**
+## 🛠️ Scripts
+
+### Re-indexing
 ```bash
-python reindex_collection.py --force
+# Full re-indexing with options
+python scripts/reindex_collection.py --collection galaxium_travels_documents_2
+
+# Interactive re-indexing
+python scripts/trigger_reindexing.py
+
+# Force re-indexing (no confirmation)
+python scripts/reindex_collection.py --force
 ```
 
-**Programmatic Re-indexing:**
-```python
-# Create new collection with different name
-graph_rag = GalaxiumGraphRAG(
-    documents_path,
-    astra_db_collection_name="my_new_collection"
-)
-graph_rag.build_knowledge_graph()
-graph_rag.create_vector_store()  # This creates the new collection
+### Debugging
+```bash
+# Debug vector storage
+python scripts/debug_vector_storage.py
+
+# Check database vectors
+python scripts/check_database_vectors.py
+
+# Verify vector format
+python scripts/verify_vector_format.py
 ```
 
 ## 📊 System Capabilities
 
-### Document Analysis
 - **28 markdown documents** from Galaxium Travels
-- **12 document types**: corporate, spacecraft, offerings, training, etc.
-- **40+ relationships** between documents
-- **Automatic link detection** from markdown files
-
-### Graph Visualization
-- **Interactive Plotly graphs** with zoom and hover
-- **NetworkX static visualizations** with clear arrows
-- **Focused views** for most connected documents
-- **Full file names** for maximum readability
-- **Color-coded nodes** by document type
-
-### Query Capabilities
-- **Semantic search** using OpenAI embeddings
-- **Graph traversal** to find related documents
-- **Contextual responses** using GPT-4
-- **Multi-hop reasoning** across document relationships
-
-## 🎯 Use Cases
-
-- **Customer Service**: Answer questions about space travel offerings
-- **Knowledge Management**: Find related documents and procedures
-- **Research & Development**: Explore future destinations and technologies
-- **Safety & Training**: Understand safety requirements and procedures
-- **Business Intelligence**: Analyze pricing and market opportunities
-
-## 🧪 Testing
-
-Run the test suites:
-```bash
-# Test AstraDB integration
-python src/test_astradb_graph_rag.py
-
-# Test document parsing
-python src/test_document_parsing.py
-```
-
-## 📈 Performance
-
-- **28 documents** processed and indexed
 - **40+ relationships** discovered automatically
-- **Sub-second query response** times
-- **Enterprise-grade storage** with AstraDB
-- **Scalable architecture** for larger document collections
+- **12 document types**: corporate, spacecraft, offerings, training, etc.
+- **Enterprise-grade storage** with AstraDB integration
+- **Interactive visualizations** with NetworkX and Plotly
+- **Graph traversal** for related content discovery
+- **LLM integration** with GPT-4 for contextual responses
 
-## 🔧 Advanced Features
+## 🎯 Key Features
 
-### Graph Visualization
-- **Clear arrows** showing document relationships
-- **Readable file names** without truncation
-- **Multiple visualization options** (static, interactive, focused)
-- **Professional styling** with color-coded document types
+- **Document Parsing**: Automatic extraction of content and relationships
+- **Knowledge Graph Construction**: Builds relationships from markdown links
+- **Vector Embeddings**: OpenAI embeddings for semantic search
+- **Graph Traversal**: Finds related documents through relationships
+- **LLM Integration**: GPT-4 for contextual responses
+- **Enterprise Storage**: AstraDB for production use
+- **Interactive Visualizations**: Clear graphs with readable file names and arrows
 
-### Query Processing
-- **Intelligent retrieval** combining semantic and graph search
-- **Context-aware responses** using document relationships
-- **Multi-document reasoning** across the knowledge graph
-- **Real-time processing** with live query capabilities
+## 📖 Documentation
 
-## 📚 Documentation
+- **Development History**: `docs/CONVERSATION_SUMMARY.md`
+- **Vector Format Analysis**: `docs/vector_format_summary.md`
+- **Source Code Docs**: `src/README.md`
 
-- **Main Demo**: `galaxium_graph_rag_demo.ipynb` - Complete interactive walkthrough
-- **Source Code**: `src/README.md` - Technical documentation
-- **System Overview**: Built-in documentation in the notebook
+## 🚀 Next Steps
 
-## 🌟 Key Highlights
-
-- **Professional Structure**: Clean, organized folder layout
-- **Interactive Demo**: Step-by-step notebook with live examples
-- **Visual Excellence**: Clear graphs with readable file names and arrows
-- **Enterprise Ready**: AstraDB integration for production use
-- **Comprehensive Testing**: Full test coverage for all components
+1. **Web Interface**: Create Flask/FastAPI web app
+2. **API Endpoints**: Expose system via REST API
+3. **Chat Interface**: Build conversational interface
+4. **Performance Optimization**: Caching and batch processing
+5. **Additional Visualizations**: More graph analysis tools
+6. **Integration**: Connect with other business systems
 
 ---
 
-*Built for Galaxium Travels - Where luxury meets the infinite.* 🌟
+*This system provides a complete Graph RAG solution for enterprise document management with advanced graph traversal and intelligent querying capabilities.*

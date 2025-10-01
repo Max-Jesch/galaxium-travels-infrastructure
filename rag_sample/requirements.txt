@@ -1,0 +1,25 @@
+# RAG Sample Dependencies
+# Core dependencies for OpenAI embeddings and AstraDB vector store
+
+# AstraDB and vector store
+astrapy>=1.0.0
+langchain-astradb>=0.1.0
+
+# OpenAI integration
+langchain-openai>=0.1.0
+openai>=1.0.0
+
+# LangChain core
+langchain>=0.1.0
+langchain-core>=0.1.0
+
+# Text processing
+langchain-text-splitters>=0.1.0
+
+# Optional: For enhanced text processing
+tiktoken>=0.5.0
+
+# Development and testing (optional)
+pytest>=7.0.0
+python-dotenv>=1.0.0
+

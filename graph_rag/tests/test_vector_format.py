@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 # Add the src directory to the path
-sys.path.append(str(Path(__file__).parent / "src"))
+sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from galaxium_graph_rag import GalaxiumGraphRAG
 from dotenv import load_dotenv
@@ -42,6 +42,10 @@ def test_vector_format():
     # Create vector store
     print("Creating vector store with float array vectors...")
     graph_rag.create_vector_store()
+    
+    # Create graph retriever (required for querying)
+    print("Creating graph retriever...")
+    graph_rag.create_graph_retriever()
     
     # Test query to verify the system works
     print("Testing query functionality...")

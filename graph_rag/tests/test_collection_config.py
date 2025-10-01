@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 # Add the src directory to the path
-sys.path.append(str(Path(__file__).parent / "src"))
+sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from galaxium_graph_rag import GalaxiumGraphRAG
 from dotenv import load_dotenv

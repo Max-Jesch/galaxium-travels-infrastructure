@@ -31,6 +31,9 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_graph_retriever import GraphRetriever
 from graph_retriever.strategies import Eager
 
+# AstraPy configuration for plain float arrays
+from astrapy.api_options import APIOptions, SerdesOptions
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -306,6 +309,15 @@ class GalaxiumGraphRAG:
         # Create AstraDB vector store
         if self.astra_db_api_endpoint and self.astra_db_application_token:
             logger.info(f"Using AstraDB vector store with collection: {self.astra_db_collection_name}")
+            
+            # Configure AstraPy to use plain float arrays instead of binary encoding
+            api_options = APIOptions(
+                serdes_options=SerdesOptions(
+                    binary_encode_vectors=False,
+                    custom_datatypes_in_reading=False
+                )
+            )
+            
             self.vectorstore = AstraDBVectorStore(
                 embedding=self.embeddings,
                 collection_name=self.astra_db_collection_name,
@@ -313,51 +325,107 @@ class GalaxiumGraphRAG:
                 token=self.astra_db_application_token,
                 namespace=self.astra_db_keyspace,
                 pre_delete_collection=True,  # Clear existing data
+                api_options=api_options,  # Use plain float arrays
             )
         else:
             logger.info("Using in-memory vector store (AstraDB credentials not provided)...")
             self.vectorstore = InMemoryVectorStore(self.embeddings)
         
-        # Add documents to vector store with custom vector format
-        self._add_documents_with_float_vectors(langchain_docs)
+        # Add documents to vector store using standard method
+        if langchain_docs:
+            logger.info(f"Adding {len(langchain_docs)} documents to vector store...")
+            self.vectorstore.add_documents(langchain_docs)
+            logger.info(f"Successfully added {len(langchain_docs)} documents to vector store")
+        else:
+            logger.warning("No documents to add to vector store")
         
         logger.info(f"Created vector store with {len(langchain_docs)} documents")
     
-    def _add_documents_with_float_vectors(self, documents):
-        """Add documents to vector store ensuring vectors are stored as float arrays"""
-        if not self.vectorstore:
-            return
+    def get_database_object(self):
+        """Get direct access to AstraDB database object for custom operations"""
+        if not self.astra_db_api_endpoint or not self.astra_db_application_token:
+            return None
         
-        # For AstraDB, we need to use a custom approach to ensure float arrays
-        if hasattr(self.vectorstore, 'collection') and self.astra_db_api_endpoint:
-            logger.info("Using custom vector insertion for float array format...")
+        try:
+            from astrapy import DataAPIClient
             
-            # Get embeddings for all documents
-            texts = [doc.page_content for doc in documents]
-            embeddings = self.embeddings.embed_documents(texts)
+            # Configure AstraPy to use plain float arrays instead of binary encoding
+            api_options = APIOptions(
+                serdes_options=SerdesOptions(
+                    binary_encode_vectors=False,
+                    custom_datatypes_in_reading=False
+                )
+            )
             
-            # Create documents with explicit vector format as float arrays
-            documents_to_insert = []
+            client = DataAPIClient(
+                token=self.astra_db_application_token,
+                api_options=api_options
+            )
+            return client.get_database(
+                api_endpoint=self.astra_db_api_endpoint,
+                token=self.astra_db_application_token,
+                keyspace=self.astra_db_keyspace,
+            )
+        except Exception as e:
+            logger.error(f"Error getting database object: {e}")
+            return None
+    
+    def get_collection_object(self):
+        """Get direct access to AstraDB collection for custom operations"""
+        database = self.get_database_object()
+        if not database:
+            return None
+        
+        try:
+            return database.get_collection(
+                self.astra_db_collection_name, 
+                keyspace=self.astra_db_keyspace
+            )
+        except Exception as e:
+            logger.error(f"Error getting collection object: {e}")
+            return None
+    
+    def inspect_vector_storage(self, limit: int = 5):
+        """Inspect how vectors are actually stored in the database"""
+        collection = self.get_collection_object()
+        if not collection:
+            logger.error("Cannot inspect vector storage - no collection access")
+            return None
+        
+        try:
+            # Get a few documents to inspect their structure
+            documents = list(collection.find({}, limit=limit))
+            logger.info(f"Retrieved {len(documents)} documents for inspection")
+            
             for i, doc in enumerate(documents):
-                # Create document with vector as float array
-                doc_dict = {
-                    "page_content": doc.page_content,
-                    "metadata": doc.metadata,
-                    "$vector": embeddings[i]  # Store as float array using $vector field
-                }
-                documents_to_insert.append(doc_dict)
+                logger.info(f"\nDocument {i+1}:")
+                logger.info(f"  ID: {doc.get('_id', 'N/A')}")
+                logger.info(f"  Content length: {len(doc.get('content', ''))}")
+                logger.info(f"  Metadata keys: {list(doc.get('metadata', {}).keys())}")
+                
+                # Check for vector field
+                if '$vector' in doc:
+                    vector = doc['$vector']
+                    if isinstance(vector, list):
+                        logger.info(f"  Vector: Array with {len(vector)} dimensions")
+                        logger.info(f"  Vector sample: {vector[:5]}...")
+                    elif isinstance(vector, dict) and '$binary' in vector:
+                        logger.info(f"  Vector: Binary format ({len(vector['$binary'])} chars)")
+                    else:
+                        logger.info(f"  Vector: {type(vector)} format")
+                else:
+                    logger.info("  Vector: No $vector field found")
+                
+                # Check for other vector-related fields
+                vector_fields = [k for k in doc.keys() if 'vector' in k.lower()]
+                if vector_fields:
+                    logger.info(f"  Other vector fields: {vector_fields}")
+                
+            return documents
             
-            # Insert documents directly into the collection
-            try:
-                self.vectorstore.collection.insert_many(documents_to_insert)
-                logger.info(f"Inserted {len(documents_to_insert)} documents with float array vectors")
-            except Exception as e:
-                logger.error(f"Error inserting documents with float vectors: {e}")
-                # Fallback to standard method
-                self.vectorstore.add_documents(documents)
-        else:
-            # For in-memory or other vector stores, use standard method
-            self.vectorstore.add_documents(documents)
+        except Exception as e:
+            logger.error(f"Error inspecting vector storage: {e}")
+            return None
         
     def create_graph_retriever(self):
         """Create graph retriever with edge traversal"""
@@ -552,6 +620,10 @@ def main():
     # Create vector store
     print("\nCreating vector store...")
     graph_rag.create_vector_store()
+    
+    # Inspect vector storage format
+    print("\nInspecting vector storage format...")
+    graph_rag.inspect_vector_storage(limit=3)
     
     # Create graph retriever
     print("\nCreating graph retriever...")
