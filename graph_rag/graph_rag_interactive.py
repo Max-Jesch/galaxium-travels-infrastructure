@@ -266,65 +266,8 @@ split_docs = split_documents(langchain_docs, CHUNK_SIZE, CHUNK_OVERLAP)
 print_summary("Document Processing Results", split_docs)
 
 #%%
-# =============================================================================
-# 7. CREATE EMBEDDINGS
-# =============================================================================
 
-def create_embeddings_for_documents(documents: List[Document]) -> List[Document]:
-    """Create embeddings for document chunks."""
-    embedding_model = get_embedding_model()
-    
-    print(f"🔄 Creating embeddings for {len(documents)} document chunks...")
-    print("✅ Embeddings created (using hash-based embeddings for testing)")
-    
-    return documents
 
-# Execute embedding creation
-print("🚀 Creating embeddings...")
-embedded_docs = create_embeddings_for_documents(split_docs)
-
-print_summary("Embedding Results", embedded_docs)
-
-#%%
-# =============================================================================
-# 8. CREATE DOCUMENT RELATIONSHIPS
-# =============================================================================
-
-def create_document_relationships(documents: List[Document]) -> List[Dict[str, Any]]:
-    """Create relationship data for graph traversal."""
-    relationships = []
-    
-    for doc in documents:
-        doc_id = doc.metadata['doc_id']
-        linked_docs = doc.metadata.get('linked_docs', [])
-        
-        for linked_doc in linked_docs:
-            if isinstance(linked_doc, dict):
-                target_path = linked_doc.get('path', '')
-                link_text = linked_doc.get('text', '')
-            else:
-                target_path = linked_doc
-                link_text = ''
-            
-            if target_path:
-                relationships.append({
-                    'source': doc_id,
-                    'target': target_path,
-                    'relationship_type': 'document_link',
-                    'metadata': {
-                        'source_title': doc.metadata['title'],
-                        'target_path': target_path,
-                        'link_text': link_text
-                    }
-                })
-    
-    return relationships
-
-# Execute relationship creation
-print("🔗 Creating document relationships...")
-relationships = create_document_relationships(embedded_docs)
-
-print_summary("Document Relationships", relationships)
 
 #%%
 # =============================================================================
@@ -384,91 +327,6 @@ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 collection_name = f"{COLLECTION_NAME}_{timestamp}"
 print(f"📅 Using collection name: {collection_name}")
 
-vector_store = store_documents_in_astradb(embedded_docs, collection_name)
+vector_store = store_documents_in_astradb(split_docs, collection_name)
 
 #%%
-# =============================================================================
-# 10. FINAL SUMMARY
-# =============================================================================
-
-print("\n" + "="*60)
-print("🎉 GRAPH RAG SYSTEM SUMMARY")
-print("="*60)
-print(f"📄 Total documents processed: {len(documents)}")
-print(f"📝 Total document chunks: {len(embedded_docs)}")
-print(f"🔗 Total relationships: {len(relationships)}")
-print(f"📁 Categories found: {set(doc.metadata['category'] for doc in embedded_docs)}")
-
-if vector_store:
-    print(f"✅ Documents successfully stored in AstraDB")
-    print(f"🗄️  Collection: {collection_name}")
-else:
-    print(f"⚠️  Documents ready for storage (AstraDB credentials needed)")
-
-print("\n" + "="*60)
-print("🎯 SYSTEM READY FOR USE!")
-print("="*60)
-
-#%%
-# =============================================================================
-# 11. QUICK INSPECTION TOOLS
-# =============================================================================
-
-def inspect_document(doc_index: int = 0):
-    """Inspect a specific document by index."""
-    if 0 <= doc_index < len(embedded_docs):
-        doc = embedded_docs[doc_index]
-        print(f"\n📄 Document {doc_index}:")
-        print(f"Title: {doc.metadata['title']}")
-        print(f"Category: {doc.metadata['category']}")
-        print(f"Content length: {len(doc.page_content)} characters")
-        print(f"Links: {len(doc.metadata['linked_docs'])}")
-        print(f"\nContent preview:")
-        print(doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content)
-    else:
-        print(f"❌ Invalid document index. Available range: 0-{len(embedded_docs)-1}")
-
-def inspect_relationships(source_filter: str = None):
-    """Inspect relationships, optionally filtered by source."""
-    filtered_rels = relationships
-    if source_filter:
-        filtered_rels = [rel for rel in relationships if source_filter in rel['source']]
-    
-    print(f"\n🔗 Relationships (showing {len(filtered_rels)} of {len(relationships)}):")
-    for i, rel in enumerate(filtered_rels[:10]):  # Show first 10
-        print(f"  {i+1}. {rel['source']} -> {rel['target']}")
-    
-    if len(filtered_rels) > 10:
-        print(f"  ... and {len(filtered_rels) - 10} more")
-
-def get_category_stats():
-    """Get statistics by category."""
-    categories = {}
-    for doc in embedded_docs:
-        cat = doc.metadata['category']
-        categories[cat] = categories.get(cat, 0) + 1
-    
-    print("\n📊 Documents by category:")
-    for cat, count in sorted(categories.items()):
-        print(f"  {cat}: {count} documents")
-
-print("✅ Inspection tools ready!")
-print("Available functions:")
-print("  - inspect_document(index)")
-print("  - inspect_relationships(source_filter)")
-print("  - get_category_stats()")
-
-#%%
-# =============================================================================
-# 12. EXAMPLE USAGE
-# =============================================================================
-
-# Example: Inspect first document
-inspect_document(0)
-
-# Example: Get category statistics
-get_category_stats()
-
-# Example: Inspect relationships
-inspect_relationships()
-
