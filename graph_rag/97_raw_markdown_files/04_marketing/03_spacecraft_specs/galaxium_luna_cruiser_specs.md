@@ -4,6 +4,15 @@
 
 The Galaxium Luna Cruiser is a specialized spacecraft designed for lunar surface landings and excursions. It combines advanced propulsion, robust life support systems, and luxury amenities to provide a safe and comfortable experience for passengers exploring the Moon.
 
+**Primary Missions:**
+- [Lunar Surface Adventure](../../02_offerings/05_lunar_surface_adventure.md) - Extended lunar surface operations
+- [Lunar Luxury Package](../../02_offerings/04_lunar_luxury_package.md) - Lunar surface excursions
+
+**Crew Requirements:**
+- [Level 2 Safety Certification](../../03_hr/01_training/space_safety_certification.md#level-2-operational-safety-specialist) required for lunar surface operations
+- Specialized lunar landing training
+- Emergency procedures integrated with [Crisis Response Plan](../../06_technical/crisis_response_plan.md)
+
 ## General Specifications
 
 - **Manufacturer**: Galaxium Aerospace

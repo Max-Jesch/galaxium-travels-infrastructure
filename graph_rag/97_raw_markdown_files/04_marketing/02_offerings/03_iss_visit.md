@@ -22,8 +22,8 @@ The International Space Station Visit is Galaxium Travels' exclusive opportunity
 - **Docking**: Automated docking with ISS
 
 ### Spacecraft
-- **Primary Vehicle**: Galaxium Starliner
-- **Crew**: 4 professional astronauts
+- **Primary Vehicle**: [Galaxium Starliner](../03_spacecraft_specs/galaxium_starliner_specs.md)
+- **Crew**: 4 professional astronauts (requires [Level 1 Safety Certification](../../03_hr/01_training/space_safety_certification.md#level-1-space-safety-awareness))
 - **Passenger Capacity**: 8 passengers maximum
 - **Safety Rating**: 99.99% reliability
 - **ISS Compatibility**: Full integration with station systems

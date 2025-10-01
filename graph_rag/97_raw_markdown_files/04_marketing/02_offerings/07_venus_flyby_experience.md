@@ -23,8 +23,8 @@ The Venus Flyby Experience is Galaxium Travels' unique interplanetary adventure,
 - **Weightlessness**: Continuous zero-gravity experience
 
 ### Spacecraft
-- **Primary Vehicle**: Galaxium Aurora Explorer
-- **Crew**: 4 professional astronauts
+- **Primary Vehicle**: [Galaxium Aurora Explorer](../03_spacecraft_specs/galaxium_aurora_explorer_specs.md)
+- **Crew**: 4 professional astronauts (requires [Level 3 Safety Certification](../../03_hr/01_training/space_safety_certification.md#level-3-safety-officer-certification))
 - **Passenger Capacity**: 6 passengers maximum
 - **Safety Rating**: 99.99% reliability
 - **Interplanetary Capability**: Full Venus mission capability

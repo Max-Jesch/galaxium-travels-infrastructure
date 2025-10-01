@@ -22,8 +22,8 @@ The Earth Orbit Luxury Experience is Galaxium Travels' premier orbital adventure
 - **Weightlessness**: Continuous zero-gravity experience
 
 ### Spacecraft
-- **Primary Vehicle**: Galaxium Starliner
-- **Crew**: 4 professional astronauts
+- **Primary Vehicle**: [Galaxium Starliner](../03_spacecraft_specs/galaxium_starliner_specs.md)
+- **Crew**: 4 professional astronauts (requires [Level 1 Safety Certification](../../03_hr/01_training/space_safety_certification.md#level-1-space-safety-awareness))
 - **Passenger Capacity**: 16 passengers maximum
 - **Safety Rating**: 99.99% reliability
 - **Mission Control**: 24/7 ground support

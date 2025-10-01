@@ -23,8 +23,8 @@ The Jupiter System Exploration is Galaxium Travels' most ambitious deep space ad
 - **Weightlessness**: Continuous zero-gravity experience
 
 ### Spacecraft
-- **Primary Vehicle**: Galaxium Aurora Explorer
-- **Crew**: 6 professional astronauts
+- **Primary Vehicle**: [Galaxium Aurora Explorer](../03_spacecraft_specs/galaxium_aurora_explorer_specs.md)
+- **Crew**: 6 professional astronauts (requires [Level 3 Safety Certification](../../03_hr/01_training/space_safety_certification.md#level-3-safety-officer-certification))
 - **Passenger Capacity**: 4 passengers maximum
 - **Safety Rating**: 99.99% reliability
 - **Deep Space Capability**: Full Jupiter system mission capability

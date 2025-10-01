@@ -4,6 +4,15 @@
 
 The Galaxium Orbital Hotel Shuttle is a specialized spacecraft designed to ferry guests to and from the orbital space hotel. It combines efficient propulsion, robust life support systems, and luxury amenities to provide a safe and comfortable experience for passengers during their journey to and from the hotel.
 
+**Primary Missions:**
+- [Space Hotel Experience](../../02_offerings/08_space_hotel_experience.md) - Transport to and from orbital hotel
+- Hotel guest transportation and logistics
+
+**Crew Requirements:**
+- [Level 1 Safety Certification](../../03_hr/01_training/space_safety_certification.md#level-1-space-safety-awareness) required for orbital operations
+- Hotel docking certification
+- Emergency procedures integrated with [Crisis Response Plan](../../06_technical/crisis_response_plan.md)
+
 ## General Specifications
 
 - **Manufacturer**: Galaxium Aerospace

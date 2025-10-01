@@ -4,6 +4,16 @@
 
 The Galaxium Starliner is a state-of-the-art spacecraft designed for interplanetary luxury travel, including missions to Mars and Venus flybys. It combines advanced propulsion systems, robust life support, and luxury amenities to provide a safe and comfortable experience for passengers on extended space journeys.
 
+**Primary Missions:**
+- [Suborbital Experience](../../02_offerings/01_suborbital_experience.md) - Modified for suborbital flights
+- [Earth Orbit Experience](../../02_offerings/02_earth_orbit_experience.md) - Extended orbital stays
+- [ISS Visit](../../02_offerings/03_iss_visit.md) - International Space Station visits
+
+**Crew Requirements:**
+- [Level 1 Safety Certification](../../03_hr/01_training/space_safety_certification.md#level-1-space-safety-awareness) required for orbital operations
+- ISS docking certification for station visits
+- Emergency procedures integrated with [Crisis Response Plan](../../06_technical/crisis_response_plan.md)
+
 ## General Specifications
 
 - **Manufacturer**: Galaxium Aerospace
